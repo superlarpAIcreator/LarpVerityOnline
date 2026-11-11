@@ -691,47 +691,82 @@
   function startMathGame() {
     closeModal('gamesModal');
     document.getElementById('mathModal').style.display = 'flex';
-    const a = Math.floor(Math.random() * 20) + 10;
-    const b = Math.floor(Math.random() * 4) + 2;
-    const c = b * (Math.floor(Math.random() * 4) + 1);
-    const correctAns = a - (c / b);
-    document.getElementById('mathExpr').innerText = `${a} - ${c} / ${b}`;
+
+    // Генерируем случайный пример со смешанными операциями: a +/- (b * c) или (a * b) +/- c
+    const ops = ['+', '-'];
+    const op1 = ops[Math.floor(Math.random() * ops.length)];
+    
+    let a, b, c, correctAns, exprStr;
+    
+    if (Math.random() > 0.5) {
+      // Вариант: a + b * c
+      a = Math.floor(Math.random() * 15) + 5;
+      b = Math.floor(Math.random() * 5) + 2;
+      c = Math.floor(Math.random() * 5) + 2;
+      correctAns = (op1 === '+') ? (a + (b * c)) : (a - (b * c));
+      exprStr = `${a} ${op1} ${b} × ${c}`;
+    } else {
+      // Вариант: (a * b) / c (чтобы делилось нацело)
+      b = Math.floor(Math.random() * 4) + 2;
+      let multiplier = Math.floor(Math.random() * 4) + 2;
+      a = b * multiplier; // теперь a делится на b
+      c = Math.floor(Math.random() * 10) + 2;
+      const op2 = ops[Math.floor(Math.random() * ops.length)];
+      
+      correctAns = (op2 === '+') ? ((a / b) + c) : ((a / b) - c);
+      exprStr = `${a} ÷ ${b} ${op2} ${c}`;
+    }
+
+    document.getElementById('mathExpr').innerText = exprStr;
     const optsDiv = document.getElementById('mathOptions');
     optsDiv.innerHTML = '';
-    let answers = [correctAns, correctAns + 2, correctAns - 3, correctAns + 4];
+
+    // Генерируем варианты ответов (один правильный, три ложных)
+    let answers = [correctAns, correctAns + 2, correctAns - 3, correctAns + (Math.random() > 0.5 ? 4 : -4)];
+    // Убираем дубликаты на всякий случай
+    answers = [...new Set(answers)];
+    while(answers.length < 4) {
+      answers.push(correctAns + Math.floor(Math.random() * 6) + 1);
+    }
     answers.sort(() => Math.random() - 0.5);
+
     answers.forEach(ans => {
       const btn = document.createElement('button');
       btn.className = 'math-opt-btn';
       btn.innerText = ans;
       btn.onclick = () => {
-        clearInterval(gameTimer); closeModal('mathModal');
+        clearInterval(gameTimer); 
+        closeModal('mathModal');
         if(ans === correctAns) {
-          addLoveAndCoins(5);
-          setPhrase("🧠 Правильный ответ! (+5% любви и +5 🪙)");
+          addLoveAndCoins(3); // Награда: 3 любви и 3 монеты
+          setPhrase("🧠 Блестяще! Верный ответ! (+3% любви и +3 🪙)");
         } else {
           state.love = Math.max(0, state.love - 5);
-          setPhrase(`❌ Неверно! Ответ: ${correctAns} (-5% любви)`);
+          setPhrase(`❌ Ошибка! Правильно было: ${correctAns} (-5% любви)`);
         }
-        updateUI(); saveUserData();
+        updateUI(); 
+        saveUserData();
       };
       optsDiv.appendChild(btn);
     });
-    let t = 5.0;
+
+    // Таймер уменьшен до 4.0 секунд
+    let t = 4.0;
     document.getElementById('mathTimer').innerText = `⏱️ ${t.toFixed(1)} сек`;
     clearInterval(gameTimer);
     gameTimer = setInterval(() => {
       t -= 0.1;
       document.getElementById('mathTimer').innerText = `⏱️ ${t.toFixed(1)} сек`;
       if(t <= 0) {
-        clearInterval(gameTimer); closeModal('mathModal');
+        clearInterval(gameTimer); 
+        closeModal('mathModal');
         state.love = Math.max(0, state.love - 5);
-        updateUI(); saveUserData();
+        updateUI(); 
+        saveUserData();
         setPhrase("⏰ Время вышло! (-5% любви)");
       }
     }, 100);
-  }
-
+                                 }
   function startRPSGame() { closeModal('gamesModal'); document.getElementById('rpsModal').style.display = 'flex'; }
   function playRPS(playerChoice) {
     closeModal('rpsModal');
