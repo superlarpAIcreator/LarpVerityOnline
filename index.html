@@ -477,6 +477,35 @@
     document.getElementById('coinsVal').innerText = state.coins;
     document.getElementById('verityAvatar').innerText = getVerityFace();
     
+    // Умное размещение: шляпы и бантики — на голову, остальное — в руку!
+    const eqItem = shopItems.find(i => i.id === state.equipped);
+    const slot = document.getElementById('accessorySlot');
+    
+    if (!eqItem) {
+      slot.innerText = "";
+    } else {
+      slot.innerText = eqItem.icon;
+      // Список предметов, которые нужно держать в руке
+      const inHand = ["umbrella", "guitar", "bear", "phone", "pen"];
+      
+      if (inHand.includes(eqItem.id)) {
+        // В руку (сбоку)
+        slot.style.top = "auto";
+        slot.style.bottom = "0px";
+        slot.style.right = "8px";
+        slot.style.fontSize = "42px";
+        slot.style.transform = "rotate(15deg)";
+      } else {
+        // На голову (головные уборы и очки)
+        slot.style.bottom = "auto";
+        slot.style.top = "-16px";
+        slot.style.right = "-6px";
+        slot.style.fontSize = "38px";
+        slot.style.transform = "rotate(-10deg)";
+      }
+    }
+  }
+    
     // Обновляем аксессуар на Верити
     const eqItem = shopItems.find(i => i.id === state.equipped);
     document.getElementById('accessorySlot').innerText = eqItem ? eqItem.icon : "";
