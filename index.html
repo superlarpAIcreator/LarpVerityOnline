@@ -419,13 +419,18 @@
       });
       let data = await response.json();
       if(data.status === "success") {
-        state.hunger = data.hunger;
-        state.love = data.love;
-        state.coins = data.coins || 0;
+        state.hunger = data.hunger ?? 80;
+        state.love = data.love ?? 50;
+        state.coins = data.coins ?? 0;
         state.equipped = data.equipped || "";
         state.inventory = data.inventory ? JSON.parse(data.inventory) : [];
+      } else {
+        console.warn("Сервер не подтвердил успех, используем стандартные данные");
       }
-    } catch(e) { console.error("Ошибка загрузки:", e); }
+    } catch(e) {
+      console.error("Ошибка загрузки, запускаем оффлайн-режим:", e);
+    }
+    // В любом случае обновляем интерфейс и убираем надпись загрузки
     updateUI();
     setPhrase(getVerityPhrase());
   }
