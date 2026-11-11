@@ -364,8 +364,8 @@
 <!-- MATH MODAL -->
 <div id="mathModal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header"><div class="modal-title">Реши пример за 5 секунд!</div><button class="close-btn" onclick="closeModal('mathModal')">✕</button></div>
-    <div id="mathTimer" class="timer-badge">⏱️ 5.0 сек</div>
+    <div class="modal-header"><div class="modal-title">Реши пример за 3 секунды!</div><button class="close-btn" onclick="closeModal('mathModal')">✕</button></div>
+    <div id="mathTimer" class="timer-badge">⏱️ 3.0 сек</div>
     <div id="mathExpr" class="math-expr"></div>
     <div id="mathOptions" class="math-options"></div>
   </div>
@@ -751,7 +751,7 @@
     });
 
     // Таймер уменьшен до 4.0 секунд
-    let t = 4.0;
+    let t = 3.0;
     document.getElementById('mathTimer').innerText = `⏱️ ${t.toFixed(1)} сек`;
     clearInterval(gameTimer);
     gameTimer = setInterval(() => {
