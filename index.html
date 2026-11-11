@@ -370,9 +370,8 @@
     <div id="mathOptions" class="math-options"></div>
   </div>
 </div>
-
 <script>
-  // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (обязательно в кавычках!)
+  // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (в кавычках!)
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNG1ShgWMm3VbLwhAE0fH_jEYkZ5lhpBUrluszTbJks3TRWE3cHJ57dbGvqyQL3wo2Lg/exec";
 
   const tg = window.Telegram?.WebApp;
@@ -386,6 +385,7 @@
     coins: 0,
     equipped: "",
     inventory: [],
+    lastTime: Date.now(),
     lastPetTime: 0
   };
 
@@ -393,7 +393,7 @@
     { id: "ribbon", icon: "🎀", name: "Бантик", price: 30 },
     { id: "cap", icon: "🧢", name: "Кепка", price: 40 },
     { id: "hat", icon: "👒", name: "Панама", price: 50 },
-    { id: "tophat", icon: "🎩", name: "Цилиндр", price: 60 },
+    { id: "tophat", icon: "☂️", name: "Зонтик", price: 60 },
     { id: "pen", icon: "🖊️", name: "Ручка", price: 60 },
     { id: "guitar", icon: "🎸", name: "Гитара", price: 80 },
     { id: "bear", icon: "🧸", name: "Мишка", price: 85 },
@@ -407,21 +407,49 @@
         body: JSON.stringify({ action: "load", userId: userId })
       });
       let data = await response.json();
+      
       if(data.status === "success") {
-        state.hunger = data.hunger ?? 80;
-        state.love = data.love ?? 50;
-        state.coins = data.coins ?? 0;
+        state.hunger = Number(data.hunger) ?? 80;
+        state.love = Number(data.love) ?? 50;
+        state.coins = Number(data.coins) || 0;
         state.equipped = data.equipped || "";
         state.inventory = data.inventory ? JSON.parse(data.inventory) : [];
+        state.lastTime = Number(data.lastTime) || Date.now();
+
+        calculateOfflineProgress();
       }
     } catch(e) {
-      console.warn("Ошибка загрузки, используем стандартные данные", e);
+      console.warn("Ошибка загрузки, используем локальные данные", e);
     }
+    
+    saveUserData();
     updateUI();
     setPhrase(getVerityPhrase());
   }
 
+  function calculateOfflineProgress() {
+    const now = Date.now();
+    const diffMs = now - state.lastTime;
+    const diffMinutes = diffMs / (1000 * 60);
+
+    if (diffMinutes <= 1) return;
+
+    const hungerLoss = diffMinutes * (100 / 720);
+    state.hunger = Math.max(0, state.hunger - hungerLoss);
+
+    if (state.hunger < 40) {
+      let severityFactor = (40 - state.hunger) / 40 + 1;
+      const loveLoss = diffMinutes * 0.05 * severityFactor;
+      state.love = Math.max(0, state.love - loveLoss);
+    }
+
+    state.hunger = Math.round(state.hunger);
+    state.love = Math.round(state.love);
+    state.lastTime = now;
+  }
+
   async function saveUserData() {
+    state.lastTime = Date.now();
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: "POST",
@@ -432,7 +460,8 @@
           love: state.love,
           coins: state.coins,
           equipped: state.equipped,
-          inventory: JSON.stringify(state.inventory)
+          inventory: JSON.stringify(state.inventory),
+          lastTime: state.lastTime
         })
       });
     } catch(e) { console.error("Ошибка сохранения:", e); }
@@ -448,7 +477,8 @@
   }
 
   function getVerityPhrase() {
-    if (state.love < 30) return "Мне так одиноко... 🥺 Поиграй со мной!";
+    if (state.hunger <= 20) return "Я умираю от голода... Покорми меня скорее! 🤢";
+    if (state.love < 30) return "Мне так одиноко и грустно без тебя... 🥺";
     if (state.love < 70) return "Улыбнись! Я всегда рядом ✨";
     return "Ты — моё самое любимое солнышко! ✨💛";
   }
@@ -465,10 +495,9 @@
     document.getElementById('hungerVal').innerText = state.hunger + '%';
     document.getElementById('loveBar').style.width = state.love + '%';
     document.getElementById('loveVal').innerText = state.love + '%';
-    document.getElementById('coinsVal').innerText = state.coins;
+    document.getElementById('coinsVal').innerText = Number(state.coins) || 0;
     document.getElementById('verityAvatar').innerText = getVerityFace();
     
-    // Умное размещение: очки, шляпы и бантик — на голову, остальное — в руку
     const eqItem = shopItems.find(i => i.id === state.equipped);
     const slot = document.getElementById('accessorySlot');
     
@@ -479,14 +508,12 @@
       const inHand = ["guitar", "bear", "phone", "pen"];
       
       if (inHand.includes(eqItem.id)) {
-        // В руке сбоку
         slot.style.top = "auto";
         slot.style.bottom = "0px";
         slot.style.right = "8px";
         slot.style.fontSize = "42px";
         slot.style.transform = "rotate(15deg)";
       } else {
-        // На голове (шляпы, очки, бантик)
         slot.style.bottom = "auto";
         slot.style.top = "-16px";
         slot.style.right = "-6px";
@@ -537,7 +564,6 @@
     setPhrase("😋 Ням-ням! Вкусно! (+2 🪙)");
   }
 
-  // SHOP LOGIC
   function openShop() {
     renderShop();
     document.getElementById('shopModal').style.display = 'flex';
@@ -603,12 +629,11 @@
     renderShop();
   }
 
-  // MODALS & GAMES
   function openGamesMenu() { document.getElementById('gamesModal').style.display = 'flex'; }
   function closeModal(id) { document.getElementById(id).style.display = 'none'; clearInterval(gameTimer); }
   let gameTimer = null;
 
-  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'😃',odd:'😄'},{normal:'🫰',odd:'🤞'},{normal:'😩',odd:'😫'}];
+  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'😃',odd:'😄'},{normal:'🙉',odd:'🙊'},{normal:'🫰',odd:'🤞'}];
   function startOddGame() {
     closeModal('gamesModal');
     document.getElementById('oddModal').style.display = 'flex';
@@ -730,7 +755,6 @@
     updateUI(); saveUserData();
   }
 
-  // Init
   loadUserData();
 </script>
 </body>
