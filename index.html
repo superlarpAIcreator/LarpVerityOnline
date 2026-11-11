@@ -29,7 +29,7 @@
       max-width: 420px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
     .card {
       background: rgba(31, 41, 55, 0.7);
@@ -38,6 +38,22 @@
       border-radius: 20px;
       padding: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .coins-badge {
+      color: #f59e0b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .stats-header {
       display: flex;
@@ -64,13 +80,12 @@
       background: rgba(255,255,255,0.1);
       border-radius: 10px;
       overflow: hidden;
-      position: relative;
     }
     .progress-bar-fill {
       height: 100%;
       width: 50%;
       border-radius: 10px;
-      transition: width 0.4s ease, background-color 0.4s ease;
+      transition: width 0.4s ease;
     }
     .stat-value {
       font-size: 13px;
@@ -99,7 +114,6 @@
       max-width: 85%;
       box-shadow: 0 4px 15px rgba(255,255,255,0.2);
       margin-bottom: 20px;
-      transition: transform 0.2s ease;
     }
     .speech-bubble::after {
       content: '';
@@ -113,13 +127,26 @@
       display: block;
       width: 0;
     }
+    .avatar-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .verity-avatar {
-      font-size: 100px;
+      font-size: 95px;
       line-height: 1;
       transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .verity-avatar.tap-bounce {
       transform: scale(1.18) rotate(5deg);
+    }
+    .accessory-item {
+      position: absolute;
+      top: -15px;
+      right: -10px;
+      font-size: 42px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
     }
     .floating-heart {
       position: absolute;
@@ -131,42 +158,34 @@
       0% { opacity: 1; transform: translateY(0) scale(0.8); }
       100% { opacity: 0; transform: translateY(-70px) scale(1.4); }
     }
-    .cooldown-text {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 6px;
-    }
     .actions-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
     }
     .btn {
       background: #374151;
       color: white;
       border: none;
       border-radius: 14px;
-      padding: 14px;
-      font-size: 15px;
+      padding: 12px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      transition: all 0.2s active;
     }
-    .btn:active {
-      transform: scale(0.96);
-    }
+    .btn:active { transform: scale(0.96); }
     .btn-feed { background: linear-gradient(135deg, #ef4444, #dc2626); }
     .btn-games { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .btn-shop { background: linear-gradient(135deg, #f59e0b, #d97706); }
     
-    /* MODALS & MINI GAMES */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: rgba(0,0,0,0.85);
       backdrop-filter: blur(8px);
       display: none;
@@ -184,159 +203,118 @@
       max-width: 380px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      position: relative;
+      gap: 14px;
+      max-height: 85vh;
+      overflow-y: auto;
     }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; }
     .modal-title { font-size: 18px; font-weight: 700; }
     .close-btn {
       background: rgba(255,255,255,0.1);
-      border: none;
-      color: white;
-      border-radius: 50%;
-      width: 32px; height: 32px;
-      font-size: 16px; cursor: pointer;
-    }
-    .game-options-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    .game-btn {
-      background: #374151;
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 14px;
-      border-radius: 12px;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border: none; color: white; border-radius: 50%;
+      width: 32px; height: 32px; font-size: 16px; cursor: pointer;
     }
     
-    /* 10x10 FIND ODD EMOJI GAME */
-    .odd-grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 3px;
-      width: 100%;
-      max-width: 330px;
-      margin: 0 auto;
-      background: rgba(0,0,0,0.3);
-      padding: 6px;
-      border-radius: 12px;
-    }
-    .odd-cell {
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .timer-badge {
-      font-size: 16px;
-      font-weight: 700;
-      color: #f59e0b;
-      text-align: center;
-    }
-
-    /* 3 BOXES GAME */
-    .boxes-container {
-      display: flex;
-      justify-content: space-around;
-      gap: 10px;
-      margin: 10px 0;
-    }
-    .box-item {
-      font-size: 44px;
-      padding: 10px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 14px;
-      cursor: pointer;
-    }
-
-    /* RPS GAME */
-    .rps-container {
-      display: flex;
-      justify-content: space-around;
-      gap: 10px;
-      margin: 10px 0;
-    }
-    .rps-btn {
-      font-size: 38px;
-      padding: 12px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 14px;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    /* MATH QUIZ */
-    .math-expr {
-      font-size: 26px;
-      font-weight: 800;
-      text-align: center;
-      color: #38bdf8;
-    }
-    .math-options {
+    /* SHOP GRID */
+    .shop-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-    .math-opt-btn {
-      background: #374151;
-      border: none;
+    .shop-item-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
       padding: 12px;
-      border-radius: 10px;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .shop-item-icon { font-size: 36px; }
+    .shop-item-name { font-size: 13px; font-weight: 600; text-align: center; }
+    .shop-item-btn {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
     }
+    .btn-buy { background: #f59e0b; color: #111; }
+    .btn-equip { background: #10b981; color: #fff; }
+    .btn-equipped { background: #374151; color: #9ca3af; }
+
+    /* MINI GAMES UI */
+    .game-options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .game-btn {
+      background: #374151; border: 1px solid rgba(255,255,255,0.1);
+      padding: 14px; border-radius: 12px; color: white; font-weight: 600;
+      font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+    }
+    .odd-grid {
+      display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px;
+      width: 100%; max-width: 330px; margin: 0 auto; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 12px;
+    }
+    .odd-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 18px; background: rgba(255,255,255,0.05); border-radius: 4px; cursor: pointer; }
+    .boxes-container, .rps-container { display: flex; justify-content: space-around; gap: 10px; margin: 10px 0; }
+    .box-item, .rps-btn { font-size: 38px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+    .math-expr { font-size: 26px; font-weight: 800; text-align: center; color: #38bdf8; }
+    .math-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .math-opt-btn { background: #374151; border: none; padding: 12px; border-radius: 10px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .timer-badge { font-size: 16px; font-weight: 700; color: #f59e0b; text-align: center; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
+  <!-- TOP BAR (COINS) -->
+  <div class="top-bar">
+    <span>Тамагочи Верити</span>
+    <div class="coins-badge">🪙 <span id="coinsVal">0</span></div>
+  </div>
+
   <!-- STATS -->
   <div class="card stats-header">
     <div class="stat-row">
       <div class="stat-label">🍎 Голод</div>
-      <div class="progress-bar-bg">
-        <div id="hungerBar" class="progress-bar-fill" style="background:#ef4444;"></div>
-      </div>
+      <div class="progress-bar-bg"><div id="hungerBar" class="progress-bar-fill" style="background:#ef4444;"></div></div>
       <div id="hungerVal" class="stat-value">80%</div>
     </div>
     <div class="stat-row">
       <div class="stat-label">❤️ Любовь</div>
-      <div class="progress-bar-bg">
-        <div id="loveBar" class="progress-bar-fill" style="background:#ec4899;"></div>
-      </div>
+      <div class="progress-bar-bg"><div id="loveBar" class="progress-bar-fill" style="background:#ec4899;"></div></div>
       <div id="loveVal" class="stat-value">50%</div>
     </div>
   </div>
 
   <!-- STAGE (VERITY) -->
-  <div class="card pet-stage" id="petStage" onclick="petVerity(event)">
+  <div class="card pet-stage" onclick="petVerity(event)">
     <div id="speechBubble" class="speech-bubble">Загружаю данные из облака... ⏳</div>
-    <div id="verityAvatar" class="verity-avatar">🙂</div>
-    <div class="cooldown-text">👇 Жми прямо на Верити (+1% Любви / 1 сек)</div>
+    <div class="avatar-wrapper">
+      <div id="verityAvatar" class="verity-avatar">🙂</div>
+      <div id="accessorySlot" class="accessory-item"></div>
+    </div>
+    <div style="font-size:11px; color:#9ca3af; margin-top:12px;">👇 Жми прямо на Верити (+1% Любви и +1 🪙)</div>
   </div>
 
   <!-- ACTIONS -->
   <div class="actions-grid">
-    <button class="btn btn-feed" onclick="feedVerity()">🍎 Покормить</button>
-    <button class="btn btn-games" onclick="openGamesMenu()">🎮 Мини-игры</button>
+    <button class="btn btn-feed" onclick="feedVerity()">🍎 Кормить</button>
+    <button class="btn btn-games" onclick="openGamesMenu()">🎮 Игры</button>
+    <button class="btn btn-shop" onclick="openShop()">🛍️ Магазин</button>
+  </div>
+</div>
+
+<!-- SHOP MODAL -->
+<div id="shopModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">🛍️ Магазин аксессуаров</div>
+      <button class="close-btn" onclick="closeModal('shopModal')">✕</button>
+    </div>
+    <div id="shopGrid" class="shop-grid"></div>
   </div>
 </div>
 
@@ -348,33 +326,18 @@
       <button class="close-btn" onclick="closeModal('gamesModal')">✕</button>
     </div>
     <div class="game-options-grid">
-      <button class="game-btn" onclick="startOddGame()">
-        <span>👿 Найди лишнего (10x10)</span>
-        <small style="color:#f59e0b;">12 сек</small>
-      </button>
-      <button class="game-btn" onclick="startBoxesGame()">
-        <span>📦 3 Коробки</span>
-        <small style="color:#10b981;">Угадайка</small>
-      </button>
-      <button class="game-btn" onclick="startMathGame()">
-        <span>⚡ Быстрая математика</span>
-        <small style="color:#ef4444;">5 сек</small>
-      </button>
-      <button class="game-btn" onclick="startRPSGame()">
-        <span>✊ Камень-Ножницы-Бумага</span>
-        <small style="color:#8b5cf6;">С Верити</small>
-      </button>
+      <button class="game-btn" onclick="startOddGame()"><span>👿 Найди лишнего (10x10)</span><small style="color:#f59e0b;">12 сек</small></button>
+      <button class="game-btn" onclick="startBoxesGame()"><span>📦 3 Коробки</span><small style="color:#10b981;">Угадайка</small></button>
+      <button class="game-btn" onclick="startMathGame()"><span>⚡ Быстрая математика</span><small style="color:#ef4444;">5 сек</small></button>
+      <button class="game-btn" onclick="startRPSGame()"><span>✊ Камень-Ножницы-Бумага</span><small style="color:#8b5cf6;">С Верити</small></button>
     </div>
   </div>
 </div>
 
-<!-- ODD EMOJI GAME MODAL -->
+<!-- ODD EMOJI MODAL -->
 <div id="oddModal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Найди лишнего эмодзи!</div>
-      <button class="close-btn" onclick="closeModal('oddModal')">✕</button>
-    </div>
+    <div class="modal-header"><div class="modal-title">Найди лишнего эмодзи!</div><button class="close-btn" onclick="closeModal('oddModal')">✕</button></div>
     <div id="oddTimer" class="timer-badge">⏱️ 12 сек</div>
     <div id="oddGrid" class="odd-grid"></div>
   </div>
@@ -383,10 +346,7 @@
 <!-- 3 BOXES MODAL -->
 <div id="boxesModal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Где конфета?</div>
-      <button class="close-btn" onclick="closeModal('boxesModal')">✕</button>
-    </div>
+    <div class="modal-header"><div class="modal-title">Где конфета?</div><button class="close-btn" onclick="closeModal('boxesModal')">✕</button></div>
     <p style="text-align:center; font-size: 14px; color:#9ca3af;">Угадай, под какой коробкой Верити спрятал сладость!</p>
     <div class="boxes-container">
       <div class="box-item" onclick="chooseBox(1)">📦</div>
@@ -399,10 +359,7 @@
 <!-- RPS MODAL -->
 <div id="rpsModal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Камень, ножницы, бумага</div>
-      <button class="close-btn" onclick="closeModal('rpsModal')">✕</button>
-    </div>
+    <div class="modal-header"><div class="modal-title">Камень, ножницы, бумага</div><button class="close-btn" onclick="closeModal('rpsModal')">✕</button></div>
     <p style="text-align:center; font-size: 14px; color:#9ca3af;">Сыграй с Верити! Выбери свой ход:</p>
     <div class="rps-container">
       <div class="rps-btn" onclick="playRPS('rock')">✊</div>
@@ -412,13 +369,10 @@
   </div>
 </div>
 
-<!-- MATH QUIZ MODAL -->
+<!-- MATH MODAL -->
 <div id="mathModal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Реши пример за 5 секунд!</div>
-      <button class="close-btn" onclick="closeModal('mathModal')">✕</button>
-    </div>
+    <div class="modal-header"><div class="modal-title">Реши пример за 5 секунд!</div><button class="close-btn" onclick="closeModal('mathModal')">✕</button></div>
     <div id="mathTimer" class="timer-badge">⏱️ 5.0 сек</div>
     <div id="mathExpr" class="math-expr"></div>
     <div id="mathOptions" class="math-options"></div>
@@ -437,8 +391,24 @@
   let state = {
     hunger: 80,
     love: 50,
+    coins: 0,
+    equipped: "",
+    inventory: [],
     lastPetTime: 0
   };
+
+  const shopItems = [
+    { id: "ribbon", icon: "🎀", name: "Бантик", price: 30 },
+    { id: "cap", icon: "🧢", name: "Кепка", price: 40 },
+    { id: "glasses", icon: "🕶️", name: "Очки", price: 50 },
+    { id: "hat", icon: "👒", name: "Панама", price: 50 },
+    { id: "tophat", icon: "🎩", name: "Цилиндр", price: 60 },
+    { id: "pen", icon: "🖊️", name: "Ручка", price: 60 },
+    { id: "umbrella", icon: "☂️", name: "Зонтик", price: 70 },
+    { id: "guitar", icon: "🎸", name: "Гитара", price: 80 },
+    { id: "bear", icon: "🧸", name: "Мишка", price: 85 },
+    { id: "phone", icon: "📞", name: "Телефон", price: 90 }
+  ];
 
   async function loadUserData() {
     try {
@@ -450,10 +420,11 @@
       if(data.status === "success") {
         state.hunger = data.hunger;
         state.love = data.love;
+        state.coins = data.coins || 0;
+        state.equipped = data.equipped || "";
+        state.inventory = data.inventory ? JSON.parse(data.inventory) : [];
       }
-    } catch(e) {
-      console.error("Ошибка загрузки:", e);
-    }
+    } catch(e) { console.error("Ошибка загрузки:", e); }
     updateUI();
     setPhrase(getVerityPhrase());
   }
@@ -462,24 +433,32 @@
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "save", userId: userId, hunger: state.hunger, love: state.love })
+        body: JSON.stringify({
+          action: "save",
+          userId: userId,
+          hunger: state.hunger,
+          love: state.love,
+          coins: state.coins,
+          equipped: state.equipped,
+          inventory: JSON.stringify(state.inventory)
+        })
       });
-    } catch(e) {
-      console.error("Ошибка сохранения:", e);
+    } catch(e) { console.error("Ошибка сохранения:", e); }
+  }
+
+  function addLoveAndCoins(amount) {
+    const oldLove = state.love;
+    state.love = Math.min(100, state.love + amount);
+    const addedLove = state.love - oldLove;
+    if (addedLove > 0) {
+      state.coins += addedLove;
     }
   }
 
   function getVerityPhrase() {
-    if (state.love < 30) {
-      const p = ["Мне так одиноко без тебя... 🥺", "Ты совсем про меня забыл, да?", "В животике урчит, и на душе холодно... 💧", "Холодно и пусто... Я жду тебя 💔"];
-      return p[Math.floor(Math.random()*p.length)];
-    } else if (state.love < 70) {
-      const p = ["Давай станем лучшими друзьями! 💛", "Я так рад тебя видеть сегодня!", "Ты самый лучший друг на свете! 😊", "Улыбнись! Я всегда рядом ✨"];
-      return p[Math.floor(Math.random()*p.length)];
-    } else {
-      const p = ["Ты — моё самое любимое солнышко на свете! ✨💛", "Обожаю проводить с тобой время, ты лучший! 🥰", "Мы с тобой неразлучные друзья навсегда! 🎉", "Моя шкала любви зашкаливает рядом с тобой! 💖"];
-      return p[Math.floor(Math.random()*p.length)];
-    }
+    if (state.love < 30) return "Мне так одиноко... 🥺 Поиграй со мной!";
+    if (state.love < 70) return "Улыбнись! Я всегда рядом ✨";
+    return "Ты — моё самое любимое солнышко! ✨💛";
   }
 
   function getVerityFace() {
@@ -494,7 +473,12 @@
     document.getElementById('hungerVal').innerText = state.hunger + '%';
     document.getElementById('loveBar').style.width = state.love + '%';
     document.getElementById('loveVal').innerText = state.love + '%';
+    document.getElementById('coinsVal').innerText = state.coins;
     document.getElementById('verityAvatar').innerText = getVerityFace();
+    
+    // Обновляем аксессуар на Верити
+    const eqItem = shopItems.find(i => i.id === state.equipped);
+    document.getElementById('accessorySlot').innerText = eqItem ? eqItem.icon : "";
   }
 
   function setPhrase(text) {
@@ -506,7 +490,7 @@
     if (now - state.lastPetTime < 1000) return;
     state.lastPetTime = now;
 
-    state.love = Math.min(100, state.love + 1);
+    addLoveAndCoins(1);
     updateUI();
     saveUserData();
 
@@ -516,36 +500,100 @@
 
     const heart = document.createElement('div');
     heart.className = 'floating-heart';
-    heart.innerText = Math.random() > 0.5 ? '❤️' : '✨';
+    heart.innerText = '🪙';
     heart.style.left = (e.clientX - 12) + 'px';
     heart.style.top = (e.clientY - 20) + 'px';
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 1000);
 
-    setPhrase("Хи-хи, мне щекотно! ✨");
+    setPhrase("Хи-хи, мне щекотно! (+1 🪙)");
   }
 
   function feedVerity() {
     if (state.hunger >= 100) {
       state.love = Math.max(0, state.love - 5);
-      updateUI();
-      saveUserData();
-      setPhrase("Ой-ой! Я уже сыт, не пичкай меня! (-5% любви) 🤢");
+      updateUI(); saveUserData();
+      setPhrase("Я уже сыт! Мне плохо... (-5% любви) 🤢");
       return;
     }
     state.hunger = Math.min(100, state.hunger + 20);
-    state.love = Math.min(100, state.love + 2);
-    updateUI();
-    saveUserData();
-    setPhrase("😋 Ням-ням! Очень вкусно!\n\n" + getVerityPhrase());
+    addLoveAndCoins(2);
+    updateUI(); saveUserData();
+    setPhrase("😋 Ням-ням! Вкусно! (+2 🪙)");
   }
 
+  // SHOP LOGIC
+  function openShop() {
+    renderShop();
+    document.getElementById('shopModal').style.display = 'flex';
+  }
+
+  function renderShop() {
+    const grid = document.getElementById('shopGrid');
+    grid.innerHTML = '';
+
+    shopItems.forEach(item => {
+      const isOwned = state.inventory.includes(item.id);
+      const isEquipped = state.equipped === item.id;
+
+      let btnHtml = '';
+      if (isEquipped) {
+        btnHtml = `<button class="shop-item-btn btn-equipped" onclick="unequipItem()">Снять</button>`;
+      } else if (isOwned) {
+        btnHtml = `<button class="shop-item-btn btn-equip" onclick="equipItem('${item.id}')">Надеть</button>`;
+      } else {
+        btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyItem('${item.id}')">${item.price} 🪙</button>`;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'shop-item-card';
+      card.innerHTML = `
+        <div class="shop-item-icon">${item.icon}</div>
+        <div class="shop-item-name">${item.name}</div>
+        ${btnHtml}
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function buyItem(id) {
+    const item = shopItems.find(i => i.id === id);
+    if (!item) return;
+
+    if (state.coins < item.price) {
+      alert("Не хватает монет! Погладь Верити или поиграй в игры 💛");
+      return;
+    }
+
+    state.coins -= item.price;
+    state.inventory.push(id);
+    state.equipped = id;
+    updateUI();
+    saveUserData();
+    renderShop();
+    setPhrase(`Ура! Новый аксессуар ${item.icon} надет!`);
+  }
+
+  function equipItem(id) {
+    state.equipped = id;
+    updateUI();
+    saveUserData();
+    renderShop();
+  }
+
+  function unequipItem() {
+    state.equipped = "";
+    updateUI();
+    saveUserData();
+    renderShop();
+  }
+
+  // MODALS & GAMES
   function openGamesMenu() { document.getElementById('gamesModal').style.display = 'flex'; }
   function closeModal(id) { document.getElementById(id).style.display = 'none'; clearInterval(gameTimer); }
   let gameTimer = null;
 
-  // --- GAME 1: ODD EMOJI ---
-  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'🫰',odd:'🤞'},{normal:'😩',odd:'😫'},{normal:'🐪',odd:'🐫'}];
+  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'😃',odd:'😄'},{normal:'🫰',odd:'🤞'},{normal:'🙊',odd:'🙉'}];
   function startOddGame() {
     closeModal('gamesModal');
     document.getElementById('oddModal').style.display = 'flex';
@@ -561,11 +609,10 @@
       cell.className = 'odd-cell';
       cell.innerText = (i === targetIdx) ? pair.odd : pair.normal;
       cell.onclick = () => {
-        clearInterval(gameTimer);
-        closeModal('oddModal');
+        clearInterval(gameTimer); closeModal('oddModal');
         if(i === targetIdx) {
-          state.love = Math.min(100, state.love + 8);
-          setPhrase("🎉 Ура! Ты нашел лишнего! (+8% любви)");
+          addLoveAndCoins(8);
+          setPhrase("🎉 Нашел лишнего! (+8% любви и +8 🪙)");
         } else {
           state.love = Math.max(0, state.love - 5);
           setPhrase("❌ Не угадал! (-5% любви)");
@@ -579,8 +626,7 @@
       timeLeft--;
       document.getElementById('oddTimer').innerText = `⏱️ ${timeLeft} сек`;
       if(timeLeft <= 0) {
-        clearInterval(gameTimer);
-        closeModal('oddModal');
+        clearInterval(gameTimer); closeModal('oddModal');
         state.love = Math.max(0, state.love - 5);
         updateUI(); saveUserData();
         setPhrase("⏰ Время вышло! (-5% любви)");
@@ -588,14 +634,13 @@
     }, 1000);
   }
 
-  // --- GAME 2: 3 BOXES ---
   function startBoxesGame() { closeModal('gamesModal'); document.getElementById('boxesModal').style.display = 'flex'; }
   function chooseBox(num) {
     closeModal('boxesModal');
     const win = Math.floor(Math.random() * 3) + 1;
     if(num === win) {
-      state.love = Math.min(100, state.love + 5);
-      setPhrase("🎉 Ура! Ты отгадал коробку! (+5% любви)");
+      addLoveAndCoins(5);
+      setPhrase("🎉 Отгадал коробку! (+5% любви и +5 🪙)");
     } else {
       state.love = Math.max(0, state.love - 5);
       setPhrase(`❌ Увы! Конфета была в коробке №${win}. (-5% любви)`);
@@ -603,7 +648,6 @@
     updateUI(); saveUserData();
   }
 
-  // --- GAME 3: FAST MATH ---
   function startMathGame() {
     closeModal('gamesModal');
     document.getElementById('mathModal').style.display = 'flex';
@@ -621,11 +665,10 @@
       btn.className = 'math-opt-btn';
       btn.innerText = ans;
       btn.onclick = () => {
-        clearInterval(gameTimer);
-        closeModal('mathModal');
+        clearInterval(gameTimer); closeModal('mathModal');
         if(ans === correctAns) {
-          state.love = Math.min(100, state.love + 5);
-          setPhrase("🧠 Гений! Правильный ответ! (+5% любви)");
+          addLoveAndCoins(5);
+          setPhrase("🧠 Правильный ответ! (+5% любви и +5 🪙)");
         } else {
           state.love = Math.max(0, state.love - 5);
           setPhrase(`❌ Неверно! Ответ: ${correctAns} (-5% любви)`);
@@ -641,8 +684,7 @@
       t -= 0.1;
       document.getElementById('mathTimer').innerText = `⏱️ ${t.toFixed(1)} сек`;
       if(t <= 0) {
-        clearInterval(gameTimer);
-        closeModal('mathModal');
+        clearInterval(gameTimer); closeModal('mathModal');
         state.love = Math.max(0, state.love - 5);
         updateUI(); saveUserData();
         setPhrase("⏰ Время вышло! (-5% любви)");
@@ -650,11 +692,7 @@
     }, 100);
   }
 
-  // --- GAME 4: ROCK PAPER SCISSORS ---
-  function startRPSGame() {
-    closeModal('gamesModal');
-    document.getElementById('rpsModal').style.display = 'flex';
-  }
+  function startRPSGame() { closeModal('gamesModal'); document.getElementById('rpsModal').style.display = 'flex'; }
   function playRPS(playerChoice) {
     closeModal('rpsModal');
     const choices = ['rock', 'paper', 'scissors'];
@@ -668,14 +706,13 @@
       (playerChoice === 'paper' && verityChoice === 'rock') ||
       (playerChoice === 'scissors' && verityChoice === 'paper')
     ) {
-      state.love = Math.min(100, state.love + 5);
-      setPhrase(`🎉 Ты победил! Верити выбрал ${symbols[verityChoice]}. (+5% любви)`);
-      updateUI(); saveUserData();
+      addLoveAndCoins(5);
+      setPhrase(`🎉 Победил! Верити выбрал ${symbols[verityChoice]}. (+5 🪙)`);
     } else {
       state.love = Math.max(0, state.love - 3);
       setPhrase(`😢 Верити победил, выбрав ${symbols[verityChoice]}! (-3% любви)`);
-      updateUI(); saveUserData();
     }
+    updateUI(); saveUserData();
   }
 
   // Init
@@ -683,3 +720,4 @@
 </script>
 </body>
 </html>
+      
