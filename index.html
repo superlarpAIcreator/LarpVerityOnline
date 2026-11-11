@@ -142,11 +142,12 @@
       transform: scale(1.18) rotate(5deg);
     }
     .accessory-item {
-      position: absolute;
-      top: -15px;
-      right: -10px;
-      font-size: 42px;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+  font-size: 46px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  transform: rotate(15deg);
     }
     .floating-heart {
       position: absolute;
@@ -292,9 +293,9 @@
   <!-- STAGE (VERITY) -->
   <div class="card pet-stage" onclick="petVerity(event)">
     <div id="speechBubble" class="speech-bubble">Загружаю данные из облака... ⏳</div>
-    <div class="avatar-wrapper">
+    <div class="avatar-wrapper" style="position: relative;">
       <div id="verityAvatar" class="verity-avatar">🙂</div>
-      <div id="accessorySlot" class="accessory-item"></div>
+      <div id="accessorySlot" style="position: absolute; bottom: 0px; right: 8px; font-size: 42px; transform: rotate(15deg);"></div>
     </div>
     <div style="font-size:11px; color:#9ca3af; margin-top:12px;">👇 Жми прямо на Верити (+1% Любви и +1 🪙)</div>
   </div>
