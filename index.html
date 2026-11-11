@@ -142,12 +142,9 @@
       transform: scale(1.18) rotate(5deg);
     }
     .accessory-item {
-  position: absolute;
-  bottom: 5px;
-  right: 15px;
-  font-size: 46px;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
-  transform: rotate(15deg);
+      position: absolute;
+      font-size: 42px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
     }
     .floating-heart {
       position: absolute;
@@ -216,7 +213,6 @@
       width: 32px; height: 32px; font-size: 16px; cursor: pointer;
     }
     
-    /* SHOP GRID */
     .shop-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -247,7 +243,6 @@
     .btn-equip { background: #10b981; color: #fff; }
     .btn-equipped { background: #374151; color: #9ca3af; }
 
-    /* MINI GAMES UI */
     .game-options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .game-btn {
       background: #374151; border: 1px solid rgba(255,255,255,0.1);
@@ -270,13 +265,11 @@
 <body>
 
 <div class="app-container">
-  <!-- TOP BAR (COINS) -->
   <div class="top-bar">
     <span>Тамагочи Верити</span>
     <div class="coins-badge">🪙 <span id="coinsVal">0</span></div>
   </div>
 
-  <!-- STATS -->
   <div class="card stats-header">
     <div class="stat-row">
       <div class="stat-label">🍎 Голод</div>
@@ -290,17 +283,15 @@
     </div>
   </div>
 
-  <!-- STAGE (VERITY) -->
   <div class="card pet-stage" onclick="petVerity(event)">
     <div id="speechBubble" class="speech-bubble">Загружаю данные из облака... ⏳</div>
-    <div class="avatar-wrapper" style="position: relative;">
+    <div class="avatar-wrapper">
       <div id="verityAvatar" class="verity-avatar">🙂</div>
-      <div id="accessorySlot" style="position: absolute; bottom: 0px; right: 8px; font-size: 42px; transform: rotate(15deg);"></div>
+      <div id="accessorySlot" class="accessory-item"></div>
     </div>
     <div style="font-size:11px; color:#9ca3af; margin-top:12px;">👇 Жми прямо на Верити (+1% Любви и +1 🪙)</div>
   </div>
 
-  <!-- ACTIONS -->
   <div class="actions-grid">
     <button class="btn btn-feed" onclick="feedVerity()">🍎 Кормить</button>
     <button class="btn btn-games" onclick="openGamesMenu()">🎮 Игры</button>
@@ -381,7 +372,7 @@
 </div>
 
 <script>
-  // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (заканчивается на /exec)
+  // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (обязательно в кавычках!)
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNG1ShgWMm3VbLwhAE0fH_jEYkZ5lhpBUrluszTbJks3TRWE3cHJ57dbGvqyQL3wo2Lg/exec";
 
   const tg = window.Telegram?.WebApp;
@@ -401,11 +392,9 @@
   const shopItems = [
     { id: "ribbon", icon: "🎀", name: "Бантик", price: 30 },
     { id: "cap", icon: "🧢", name: "Кепка", price: 40 },
-    { id: "glasses", icon: "🕶️", name: "Очки", price: 50 },
     { id: "hat", icon: "👒", name: "Панама", price: 50 },
     { id: "tophat", icon: "🎩", name: "Цилиндр", price: 60 },
     { id: "pen", icon: "🖊️", name: "Ручка", price: 60 },
-    { id: "umbrella", icon: "☂️", name: "Зонтик", price: 70 },
     { id: "guitar", icon: "🎸", name: "Гитара", price: 80 },
     { id: "bear", icon: "🧸", name: "Мишка", price: 85 },
     { id: "phone", icon: "📞", name: "Телефон", price: 90 }
@@ -424,13 +413,10 @@
         state.coins = data.coins ?? 0;
         state.equipped = data.equipped || "";
         state.inventory = data.inventory ? JSON.parse(data.inventory) : [];
-      } else {
-        console.warn("Сервер не подтвердил успех, используем стандартные данные");
       }
     } catch(e) {
-      console.error("Ошибка загрузки, запускаем оффлайн-режим:", e);
+      console.warn("Ошибка загрузки, используем стандартные данные", e);
     }
-    // В любом случае обновляем интерфейс и убираем надпись загрузки
     updateUI();
     setPhrase(getVerityPhrase());
   }
@@ -482,7 +468,7 @@
     document.getElementById('coinsVal').innerText = state.coins;
     document.getElementById('verityAvatar').innerText = getVerityFace();
     
-    // Умное размещение: шляпы и бантики — на голову, остальное — в руку!
+    // Умное размещение: очки, шляпы и бантик — на голову, остальное — в руку
     const eqItem = shopItems.find(i => i.id === state.equipped);
     const slot = document.getElementById('accessorySlot');
     
@@ -490,18 +476,17 @@
       slot.innerText = "";
     } else {
       slot.innerText = eqItem.icon;
-      // Список предметов, которые нужно держать в руке
-      const inHand = ["umbrella", "guitar", "bear", "phone", "pen"];
+      const inHand = ["guitar", "bear", "phone", "pen"];
       
       if (inHand.includes(eqItem.id)) {
-        // В руку (сбоку)
+        // В руке сбоку
         slot.style.top = "auto";
         slot.style.bottom = "0px";
         slot.style.right = "8px";
         slot.style.fontSize = "42px";
         slot.style.transform = "rotate(15deg)";
       } else {
-        // На голову (головные уборы и очки)
+        // На голове (шляпы, очки, бантик)
         slot.style.bottom = "auto";
         slot.style.top = "-16px";
         slot.style.right = "-6px";
@@ -509,11 +494,6 @@
         slot.style.transform = "rotate(-10deg)";
       }
     }
-  }
-    
-    // Обновляем аксессуар на Верити
-    const eqItem = shopItems.find(i => i.id === state.equipped);
-    document.getElementById('accessorySlot').innerText = eqItem ? eqItem.icon : "";
   }
 
   function setPhrase(text) {
@@ -628,7 +608,7 @@
   function closeModal(id) { document.getElementById(id).style.display = 'none'; clearInterval(gameTimer); }
   let gameTimer = null;
 
-  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'😃',odd:'😄'},{normal:'🫰',odd:'🤞'},{normal:'🙊',odd:'🙉'}];
+  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'😃',odd:'😄'},{normal:'🫰',odd:'🤞'},{normal:'😩',odd:'😫'}];
   function startOddGame() {
     closeModal('gamesModal');
     document.getElementById('oddModal').style.display = 'flex';
@@ -755,4 +735,3 @@
 </script>
 </body>
 </html>
-      
