@@ -117,7 +117,6 @@
       font-size: 100px;
       line-height: 1;
       transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      filter: drop-shadow(0 10px 20px rgba(234, 179, 8, 0.3));
     }
     .verity-avatar.tap-bounce {
       transform: scale(1.18) rotate(5deg);
@@ -265,28 +264,21 @@
       border-radius: 14px;
       cursor: pointer;
     }
-    /* 2048 GAME */
-    .g2048-board {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      background: #111827;
-      padding: 8px;
-      border-radius: 10px;
-      width: 260px;
-      margin: 0 auto;
-    }
-    .g2048-cell {
-      width: 56px;
-      height: 56px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 6px;
+
+    /* RPS GAME */
+    .rps-container {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 16px;
-      color: #fff;
+      justify-content: space-around;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .rps-btn {
+      font-size: 38px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     /* MATH QUIZ */
@@ -336,7 +328,7 @@
 
   <!-- STAGE (VERITY) -->
   <div class="card pet-stage" id="petStage" onclick="petVerity(event)">
-    <div id="speechBubble" class="speech-bubble">Привет! Нажми на меня, чтобы погладить! 💛</div>
+    <div id="speechBubble" class="speech-bubble">Загружаю данные из облака... ⏳</div>
     <div id="verityAvatar" class="verity-avatar">🟡🙂</div>
     <div class="cooldown-text">👇 Жми прямо на Верити (+1% Любви / 1 сек)</div>
   </div>
@@ -368,9 +360,9 @@
         <span>⚡ Быстрая математика</span>
         <small style="color:#ef4444;">5 сек</small>
       </button>
-      <button class="game-btn" onclick="start2048Game()">
-        <span>🔢 Игра 2048</span>
-        <small style="color:#8b5cf6;">Головоломка</small>
+      <button class="game-btn" onclick="startRPSGame()">
+        <span>✊ Камень-Ножницы-Бумага</span>
+        <small style="color:#8b5cf6;">С Верити</small>
       </button>
     </div>
   </div>
@@ -387,7 +379,8 @@
     <div id="oddGrid" class="odd-grid"></div>
   </div>
 </div>
-  <!-- 3 BOXES MODAL -->
+
+<!-- 3 BOXES MODAL -->
 <div id="boxesModal" class="modal-overlay">
   <div class="modal-card">
     <div class="modal-header">
@@ -403,6 +396,22 @@
   </div>
 </div>
 
+<!-- RPS MODAL -->
+<div id="rpsModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Камень, ножницы, бумага</div>
+      <button class="close-btn" onclick="closeModal('rpsModal')">✕</button>
+    </div>
+    <p style="text-align:center; font-size: 14px; color:#9ca3af;">Сыграй с Верити! Выбери свой ход:</p>
+    <div class="rps-container">
+      <div class="rps-btn" onclick="playRPS('rock')">✊</div>
+      <div class="rps-btn" onclick="playRPS('paper')">✋</div>
+      <div class="rps-btn" onclick="playRPS('scissors')">✌️</div>
+    </div>
+  </div>
+</div>
+
 <!-- MATH QUIZ MODAL -->
 <div id="mathModal" class="modal-overlay">
   <div class="modal-card">
@@ -411,74 +420,64 @@
       <button class="close-btn" onclick="closeModal('mathModal')">✕</button>
     </div>
     <div id="mathTimer" class="timer-badge">⏱️ 5.0 сек</div>
-    <div id="mathExpr" class="math-expr">17 - 45 / 9</div>
+    <div id="mathExpr" class="math-expr"></div>
     <div id="mathOptions" class="math-options"></div>
   </div>
 </div>
 
-<!-- 2048 MODAL -->
-<div id="g2048Modal" class="modal-overlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Мини 2048 (Счет: <span id="g2048Score">0</span>)</div>
-      <button class="close-btn" onclick="closeModal('g2048Modal')">✕</button>
-    </div>
-    <div id="g2048Board" class="g2048-board"></div>
-    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 180px; margin: 0 auto;">
-      <div></div>
-      <button class="btn" style="padding:8px;" onclick="move2048('up')">⬆️</button>
-      <div></div>
-      <button class="btn" style="padding:8px;" onclick="move2048('left')">⬅️</button>
-      <button class="btn" style="padding:8px;" onclick="move2048('down')">⬇️</button>
-      <button class="btn" style="padding:8px;" onclick="move2048('right')">➡️</button>
-    </div>
-  </div>
-</div>
-
 <script>
-  // STATE
+  // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (заканчивается на /exec)
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNG1ShgWMm3VbLwhAE0fH_jEYkZ5lhpBUrluszTbJks3TRWE3cHJ57dbGvqyQL3wo2Lg/exec";
+
+  const tg = window.Telegram?.WebApp;
+  if(tg) tg.expand();
+
+  const userId = tg?.initDataUnsafe?.user?.id || 123456789;
+
   let state = {
     hunger: 80,
     love: 50,
     lastPetTime: 0
   };
 
-  const tg = window.Telegram?.WebApp;
-  if(tg) tg.expand();
+  async function loadUserData() {
+    try {
+      let response = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "load", userId: userId })
+      });
+      let data = await response.json();
+      if(data.status === "success") {
+        state.hunger = data.hunger;
+        state.love = data.love;
+      }
+    } catch(e) {
+      console.error("Ошибка загрузки:", e);
+    }
+    updateUI();
+    setPhrase(getVerityPhrase());
+  }
 
-  // EXPANDED PHRASES POOL
+  async function saveUserData() {
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "save", userId: userId, hunger: state.hunger, love: state.love })
+      });
+    } catch(e) {
+      console.error("Ошибка сохранения:", e);
+    }
+  }
+
   function getVerityPhrase() {
     if (state.love < 30) {
-      const p = [
-        "Мне так одиноко без тебя... 🥺", 
-        "Ты совсем про меня забыл, да?", 
-        "В животике урчит, и на душе холодно... 💧",
-        "Холодно и пусто... Я жду тебя 💔",
-        "Почему ты не заглядываешь ко мне почаще? 😞",
-        "Мне грустно в одиночестве, вернись ко мне..."
-      ];
+      const p = ["Мне так одиноко без тебя... 🥺", "Ты совсем про меня забыл, да?", "В животике урчит, и на душе холодно... 💧", "Холодно и пусто... Я жду тебя 💔"];
       return p[Math.floor(Math.random()*p.length)];
     } else if (state.love < 70) {
-      const p = [
-        "Давай станем лучшими друзьями! 💛", 
-        "Я так рад тебя видеть сегодня!", 
-        "Ты самый лучший друг на свете! 😊", 
-        "Улыбнись! Я всегда рядом ✨",
-        "Отличный день, чтобы немного поиграть вместе!",
-        "У меня всё отлично, пока ты заходишь ко мне! 🌻",
-        "Как твои дела? Расскажи мне что-нибудь!"
-      ];
+      const p = ["Давай станем лучшими друзьями! 💛", "Я так рад тебя видеть сегодня!", "Ты самый лучший друг на свете! 😊", "Улыбнись! Я всегда рядом ✨"];
       return p[Math.floor(Math.random()*p.length)];
     } else {
-      const p = [
-        "Ты — моё самое любимое солнышко на свете! ✨💛", 
-        "Обожаю проводить с тобой время, ты лучший! 🥰", 
-        "Мы с тобой неразлучные друзья навсегда! 🎉", 
-        "Ты невероятный человек, обнимаю крепко-крепко! 🌟",
-        "Моя шкала любви буквально зашкаливает рядом с тобой! 💖",
-        "Ура, мой любимый человек пришел! Светимся от счастья вместе!",
-        "Ни на что тебя не променяю! Ты супер! 🚀"
-      ];
+      const p = ["Ты — моё самое любимое солнышко на свете! ✨💛", "Обожаю проводить с тобой время, ты лучший! 🥰", "Мы с тобой неразлучные друзья навсегда! 🎉", "Моя шкала любви зашкаливает рядом с тобой! 💖"];
       return p[Math.floor(Math.random()*p.length)];
     }
   }
@@ -502,16 +501,14 @@
     document.getElementById('speechBubble').innerText = text;
   }
 
-  // TAP TO PET VERITY (1 SEC COOLDOWN)
   function petVerity(e) {
     const now = Date.now();
-    if (now - state.lastPetTime < 1000) {
-      return;
-    }
+    if (now - state.lastPetTime < 1000) return;
     state.lastPetTime = now;
 
     state.love = Math.min(100, state.love + 1);
     updateUI();
+    saveUserData();
 
     const avatar = document.getElementById('verityAvatar');
     avatar.classList.add('tap-bounce');
@@ -525,140 +522,100 @@
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 1000);
 
-    const petPhrases = [
-      "Хи-хи, мне щекотно! ✨", 
-      "Обожаю твои касания! 🥰", 
-      "Ты такой заботливый друг!", 
-      "Ещё-ещё гладь меня! 💛",
-      "От твоего тепла мне радостно!"
-    ];
-    setPhrase(petPhrases[Math.floor(Math.random()*petPhrases.length)]);
+    setPhrase("Хи-хи, мне щекотно! ✨");
   }
 
-  // FEED MECHANIC
   function feedVerity() {
     if (state.hunger >= 100) {
       state.love = Math.max(0, state.love - 5);
       updateUI();
-      setPhrase("Ой-ой! Я уже сыт, не пичкай меня! Мне плохо... (-5% любви) 🤢");
+      saveUserData();
+      setPhrase("Ой-ой! Я уже сыт, не пичкай меня! (-5% любви) 🤢");
       return;
     }
     state.hunger = Math.min(100, state.hunger + 20);
     state.love = Math.min(100, state.love + 2);
     updateUI();
-    setPhrase("😋 Ням-ням! Очень вкусно! Спасибо за заботу!\n\n" + getVerityPhrase());
+    saveUserData();
+    setPhrase("😋 Ням-ням! Очень вкусно!\n\n" + getVerityPhrase());
   }
 
-  // PASSIVE HUNGER DROP
-  setInterval(() => {
-    state.hunger = Math.max(0, state.hunger - 1);
-    if (state.hunger < 30) {
-      state.love = Math.max(0, state.love - 1);
-    }
-    updateUI();
-  }, 15000);
-
-  // MODAL HANDLERS
   function openGamesMenu() { document.getElementById('gamesModal').style.display = 'flex'; }
-  function closeModal(id) { 
-    document.getElementById(id).style.display = 'none'; 
-    clearInterval(gameTimer);
-  }
-
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; clearInterval(gameTimer); }
   let gameTimer = null;
 
-  // --- GAME 1: 10x10 FIND ODD EMOJI ---
-  const oddPairs = [
-    { normal: '😈', odd: '👿' },
-    { normal: '😃', odd: '😄' },
-    { normal: '🫰', odd: '🤞' },
-    { normal: '🐉', odd: '🦎' },
-    { normal: '😩', odd: '😫' },
-    { normal: '🙊', odd: '🙉' }
-  ];
-
+  // --- GAME 1: ODD EMOJI ---
+  const oddPairs = [{normal:'😈',odd:'👿'},{normal:'😃',odd:'😄'},{normal:'🐱',odd:'🐶'},{normal:'🍎',odd:'🍏'}];
   function startOddGame() {
     closeModal('gamesModal');
     document.getElementById('oddModal').style.display = 'flex';
-    
-    const pair = oddPairs[Math.floor(Math.random() * oddPairs.length)];
+    const pair = oddPairs[Math.floor(Math.random()*oddPairs.length)];
     const grid = document.getElementById('oddGrid');
     grid.innerHTML = '';
-
     const targetIdx = Math.floor(Math.random() * 100);
     let timeLeft = 12;
     document.getElementById('oddTimer').innerText = `⏱️ ${timeLeft} сек`;
 
-    for(let i = 0; i < 100; i++) {
+    for(let i=0; i<100; i++) {
       const cell = document.createElement('div');
       cell.className = 'odd-cell';
       cell.innerText = (i === targetIdx) ? pair.odd : pair.normal;
       cell.onclick = () => {
         clearInterval(gameTimer);
         closeModal('oddModal');
-        if (i === targetIdx) {
+        if(i === targetIdx) {
           state.love = Math.min(100, state.love + 8);
-          setPhrase("🎉 Ура! Ты нашел лишнего эмодзи! (+8% любви)");
+          setPhrase("🎉 Ура! Ты нашел лишнего! (+8% любви)");
         } else {
           state.love = Math.max(0, state.love - 5);
-          setPhrase("❌ Не угадал, это был обычный эмодзи! (-5% любви)");
+          setPhrase("❌ Не угадал! (-5% любви)");
         }
-        updateUI();
+        updateUI(); saveUserData();
       };
       grid.appendChild(cell);
     }
-
     clearInterval(gameTimer);
     gameTimer = setInterval(() => {
       timeLeft--;
       document.getElementById('oddTimer').innerText = `⏱️ ${timeLeft} сек`;
-      if (timeLeft <= 0) {
+      if(timeLeft <= 0) {
         clearInterval(gameTimer);
         closeModal('oddModal');
         state.love = Math.max(0, state.love - 5);
-        updateUI();
-        setPhrase("⏰ Время вышло! Ты не успел найти лишнего... (-5% любви)");
+        updateUI(); saveUserData();
+        setPhrase("⏰ Время вышло! (-5% любви)");
       }
     }, 1000);
   }
 
   // --- GAME 2: 3 BOXES ---
-  function startBoxesGame() {
-    closeModal('gamesModal');
-    document.getElementById('boxesModal').style.display = 'flex';
-  }
+  function startBoxesGame() { closeModal('gamesModal'); document.getElementById('boxesModal').style.display = 'flex'; }
   function chooseBox(num) {
     closeModal('boxesModal');
     const win = Math.floor(Math.random() * 3) + 1;
-    if (num === win) {
+    if(num === win) {
       state.love = Math.min(100, state.love + 5);
-      setPhrase("🎉 Ура! Ты отгадал коробку и получил конфету! (+5% любви)");
+      setPhrase("🎉 Ура! Ты отгадал коробку! (+5% любви)");
     } else {
       state.love = Math.max(0, state.love - 5);
       setPhrase(`❌ Увы! Конфета была в коробке №${win}. (-5% любви)`);
     }
-    updateUI();
+    updateUI(); saveUserData();
   }
 
   // --- GAME 3: FAST MATH ---
   function startMathGame() {
     closeModal('gamesModal');
     document.getElementById('mathModal').style.display = 'flex';
-
-    const a = Math.floor(Math.random() * 30) + 10;
-    const b = Math.floor(Math.random() * 9) + 2;
-    const c = b * (Math.floor(Math.random() * 5) + 1);
-    
-    const exprText = `${a} - ${c} / ${b}`;
+    const a = Math.floor(Math.random() * 20) + 10;
+    const b = Math.floor(Math.random() * 4) + 2;
+    const c = b * (Math.floor(Math.random() * 4) + 1);
     const correctAns = a - (c / b);
-    document.getElementById('mathExpr').innerText = exprText;
-
+    document.getElementById('mathExpr').innerText = `${a} - ${c} / ${b}`;
     const optsDiv = document.getElementById('mathOptions');
     optsDiv.innerHTML = '';
-    
-    let answers = [correctAns, correctAns + 2, correctAns - 3, correctAns + 5];
+    let answers = [correctAns, correctAns + 2, correctAns - 3, correctAns + 4];
     answers.sort(() => Math.random() - 0.5);
-
     answers.forEach(ans => {
       const btn = document.createElement('button');
       btn.className = 'math-opt-btn';
@@ -666,179 +623,63 @@
       btn.onclick = () => {
         clearInterval(gameTimer);
         closeModal('mathModal');
-        if (ans === correctAns) {
+        if(ans === correctAns) {
           state.love = Math.min(100, state.love + 5);
           setPhrase("🧠 Гений! Правильный ответ! (+5% любви)");
         } else {
           state.love = Math.max(0, state.love - 5);
-          setPhrase(`❌ Неверно! Правильный ответ был: ${correctAns} (-5% любви)`);
+          setPhrase(`❌ Неверно! Ответ: ${correctAns} (-5% любви)`);
         }
-        updateUI();
+        updateUI(); saveUserData();
       };
       optsDiv.appendChild(btn);
     });
-
     let t = 5.0;
     document.getElementById('mathTimer').innerText = `⏱️ ${t.toFixed(1)} сек`;
     clearInterval(gameTimer);
     gameTimer = setInterval(() => {
       t -= 0.1;
       document.getElementById('mathTimer').innerText = `⏱️ ${t.toFixed(1)} сек`;
-      if (t <= 0) {
+      if(t <= 0) {
         clearInterval(gameTimer);
         closeModal('mathModal');
         state.love = Math.max(0, state.love - 5);
-        updateUI();
-        setPhrase("⏰ Время вышло! Верити огорчен (-5% любви)");
+        updateUI(); saveUserData();
+        setPhrase("⏰ Время вышло! (-5% любви)");
       }
     }, 100);
   }
 
-  // --- GAME 4: 2048 WORKING LOGIC ---
-  let board2048 = [
-    [0,0,0,0],
-    [0,2,0,0],
-    [0,0,4,0],
-    [0,0,0,0]
-  ];
-  let score2048 = 0;
-
-  function start2048Game() {
+  // --- GAME 4: ROCK PAPER SCISSORS ---
+  function startRPSGame() {
     closeModal('gamesModal');
-    document.getElementById('g2048Modal').style.display = 'flex';
-    reset2048();
+    document.getElementById('rpsModal').style.display = 'flex';
   }
+  function playRPS(playerChoice) {
+    closeModal('rpsModal');
+    const choices = ['rock', 'paper', 'scissors'];
+    const verityChoice = choices[Math.floor(Math.random() * choices.length)];
+    const symbols = { rock: '✊', paper: '✋', scissors: '✌️' };
 
-  function reset2048() {
-    board2048 = [
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0]
-    ];
-    score2048 = 0;
-    spawn2048();
-    spawn2048();
-    render2048();
-  }
-
-  function spawn2048() {
-    let empty = [];
-    for(let r=0; r<4; r++) {
-      for(let c=0; c<4; c++) {
-        if(board2048[r][c] === 0) empty.push({r, c});
-      }
-    }
-    if(empty.length > 0) {
-      let cell = empty[Math.floor(Math.random() * empty.length)];
-      board2048[cell.r][cell.c] = Math.random() < 0.9 ? 2 : 4;
+    if (playerChoice === verityChoice) {
+      setPhrase(`🤝 Ничья! Мы оба выбрали ${symbols[verityChoice]}`);
+    } else if (
+      (playerChoice === 'rock' && verityChoice === 'scissors') ||
+      (playerChoice === 'paper' && verityChoice === 'rock') ||
+      (playerChoice === 'scissors' && verityChoice === 'paper')
+    ) {
+      state.love = Math.min(100, state.love + 5);
+      setPhrase(`🎉 Ты победил! Верити выбрал ${symbols[verityChoice]}. (+5% любви)`);
+      updateUI(); saveUserData();
+    } else {
+      state.love = Math.max(0, state.love - 3);
+      setPhrase(`😢 Верити победил, выбрав ${symbols[verityChoice]}! (-3% любви)`);
+      updateUI(); saveUserData();
     }
   }
 
-  function render2048() {
-    const el = document.getElementById('g2048Board');
-    el.innerHTML = '';
-    document.getElementById('g2048Score').innerText = score2048;
-
-    const colors = {
-      0: 'rgba(255,255,255,0.05)',
-      2: '#374151',
-      4: '#4b5563',
-      8: '#f97316',
-      16: '#ea580c',
-      32: '#ef4444',
-      64: '#dc2626',
-      128: '#eab308',
-      256: '#ca8a04',
-      512: '#2563eb',
-      1024: '#1d4ed8',
-      2048: '#9333ea'
-    };
-
-    for(let r=0; r<4; r++) {
-      for(let c=0; c<4; c++) {
-        let val = board2048[r][c];
-        let cell = document.createElement('div');
-        cell.className = 'g2048-cell';
-        cell.innerText = val > 0 ? val : '';
-        cell.style.background = colors[val] || '#9333ea';
-        el.appendChild(cell);
-      }
-    }
-  }
-
-  function slide(row) {
-    let arr = row.filter(val => val);
-    let missing = 4 - arr.length;
-    for (let i = 0; i < missing; i++) arr.push(0);
-    return arr;
-  }
-
-  function combine(row) {
-    for (let i = 0; i < 3; i++) {
-      if (row[i] !== 0 && row[i] === row[i + 1]) {
-        row[i] *= 2;
-        score2048 += row[i];
-        row[i + 1] = 0;
-      }
-    }
-    return row;
-  }
-
-  function moveLeft() {
-    let changed = false;
-    for (let r = 0; r < 4; r++) {
-      let currentRow = board2048[r];
-      let squeezed = slide(currentRow);
-      let combined = combine(squeezed);
-      let finalRow = slide(combined);
-      if (JSON.stringify(board2048[r]) !== JSON.stringify(finalRow)) changed = true;
-      board2048[r] = finalRow;
-    }
-    return changed;
-  }
-
-  function rotateLeft() {
-    let newBoard = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 4; c++) {
-        newBoard[3 - c][r] = board2048[r][c];
-      }
-    }
-    board2048 = newBoard;
-  }
-
-  function move2048(dir) {
-    let moved = false;
-    if (dir === 'left') {
-      moved = moveLeft();
-    } else if (dir === 'right') {
-      rotateLeft(); rotateLeft();
-      moved = moveLeft();
-      rotateLeft(); rotateLeft();
-    } else if (dir === 'up') {
-      rotateLeft(); rotateLeft(); rotateLeft();
-      moved = moveLeft();
-      rotateLeft();
-    } else if (dir === 'down') {
-      rotateLeft();
-      moved = moveLeft();
-      rotateLeft(); rotateLeft(); rotateLeft();
-    }
-
-    if (moved) {
-      spawn2048();
-      render2048();
-      // Награда за успехи в 2048
-      if(score2048 >= 100 && Math.random() < 0.3) {
-        state.love = Math.min(100, state.love + 2);
-        updateUI();
-      }
-    }
-  }
-
-  // INIT
-  updateUI();
+  // Init
+  loadUserData();
 </script>
 </body>
 </html>
